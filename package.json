@@ -9,6 +9,20 @@
   },
   "author": "shadz95",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shadez95/steam-id-bot.git"
+  },
+  "bugs":{
+    "url": "https://github.com/shadez95/steam-id-bot/issues"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "steam",
+    "id"
+  ],
+  "homepage": "https://github.com/shadez95/steam-id-bot",
   "engines": {
     "node": "8.x",
     "npm": "*"
