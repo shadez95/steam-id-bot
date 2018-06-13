@@ -13,7 +13,7 @@
     "type": "git",
     "url": "https://github.com/shadez95/steam-id-bot.git"
   },
-  "bugs":{
+  "bugs": {
     "url": "https://github.com/shadez95/steam-id-bot/issues"
   },
   "keywords": [
@@ -32,8 +32,11 @@
     "discord.js": "^11.3.2",
     "dotenv": "^6.0.0",
     "erlpack": "github:discordapp/erlpack",
+    "node-fetch": "^2.1.2",
     "uws": "^9.148.0",
-    "winston": "^3.0.0"
+    "wait-until": "0.0.2",
+    "winston": "^3.0.0",
+    "xmldom": "^0.1.27"
   },
   "devDependencies": {
     "nodemon": "^1.17.5"

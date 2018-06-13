@@ -1,5 +1,10 @@
 const Discord = require("discord.js");
 const winston = require("winston");
+const waitUntil = require('wait-until');
+const DOMParser = require('xmldom').DOMParser;
+const fetch = require('node-fetch');
+
+require('dotenv').config();
 
 const logger = winston.createLogger({
   level: "info",
@@ -28,34 +33,64 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Initialize Discord Bot
-var bot = new Discord.Client({
-  token: process.env.TOKEN,
-  autorun: true
-});
+const client = new Discord.Client();
 
-bot.on("ready", evt => {
+client.on("ready", evt => {
   logger.info("Connected");
-  logger.info("Logged in as: ");
-  logger.info(bot.username + " - (" + bot.id + ")");
+  const { username, id } = client.user;
+  logger.info(`Logged in as: ${username} (${id})`);
+  // client.user.setActivity(`Serving ${client.guilds.size} servers`);
+  client.user.setActivity(`Looking for steam id's`);
 });
 
-bot.on("message", (user, userID, channelID, message, evt) => {
-  // Our bot needs to know if it will execute a command
-  // It will listen for messages that will start with `!`
-  if (message.substring(0, 1) == "!") {
-    var args = message.substring(1).split(" ");
-    var cmd = args[0];
 
-    args = args.splice(1);
-    switch (cmd) {
-      // !ping
-      case "ping":
-        bot.sendMessage({
-          to: channelID,
-          message: "Pong!"
-        });
-        break;
-      // Just add any case commands if you want to..
-    }
+// TODO: post message when first joining
+// client.on('guildCreate', guild => {
+//   // waituntil guild is available
+//   waitUntil()
+//     .interval(1000)
+//     .times(30)
+//     .condition(() => guild.available)
+//     .done(result => {
+//       if (result) {
+//         // console.log(guild.channels.find("name", "general"));
+//         const channel = guild.channels.find("name", "general");
+//         guild.systemChannel.send
+//         // guild.defaultChannel.sendMessage("DM me your steam profile URL and I will give you your steam ID");
+//       }
+//     });
+
+//   // message.channel.send("DM me your steam profile URL and I will give you your steam ID");
+// });
+
+client.on("message", async message => {
+
+  switch(message.channel.type) {
+    case "dm":
+      if (message.content.includes("help")) {
+        message.channel.send("Enter your steam profile URL to get your steam ID. It should look like so: `https://steamcommunity.com/id/your_profile_name/`");
+      }
+      
+      if (message.content.includes("https://steamcommunity.com/id") && !message.content.includes("your_profile_name")) {
+        const url = message.content.concat("?xml=1");
+        try {
+          const resp = await fetch(url);
+          const text = await resp.text();
+          const doc = new DOMParser().parseFromString(text);
+          const ele = doc.documentElement.getElementsByTagName("steamID64");
+          const steamID = ele.item(0).firstChild.nodeValue;
+          message.channel.send(`Your steam id: ${steamID}`);
+        } catch (error) {
+          console.log(error);
+          message.channel.send("An error occurred retrieving your steam id");
+        }
+      }
   }
+
+  if (message.isMentioned(client.user)) {
+    message.channel.send('You must DM me your steam profile URL to receive your steam id');
+  }
+
 });
+
+client.login(process.env.TOKEN);
