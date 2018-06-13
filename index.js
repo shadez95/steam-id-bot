@@ -40,7 +40,7 @@ client.on("ready", evt => {
   const { username, id } = client.user;
   logger.info(`Logged in as: ${username} (${id})`);
   // client.user.setActivity(`Serving ${client.guilds.size} servers`);
-  client.user.setActivity(`Looking for steam id's`);
+  client.user.setActivity(`Looking for steam ID's`);
 });
 
 
