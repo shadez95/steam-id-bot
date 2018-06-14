@@ -53,8 +53,8 @@ client.on('guildCreate', guild => {
         
         const { id, name, region } = guild;
         logger.info(`Added to guild ${name} | ID: ${id} | Region: ${region}`);
-        const totalGuilds = client.guilds.array().length;
-        logger.info("Total guilds:", totalGuilds);
+        const totalGuilds = client.guilds.size;
+        logger.info(`Total guilds: ${totalGuilds}`);
       }
     });
 
@@ -64,8 +64,8 @@ client.on('guildCreate', guild => {
 client.on("guildDelete", guild => {
   const { id, name, region } = guild;
   logger.info(`Guild ${name} removed me with ID: ${id}`);
-  const totalGuilds = client.guilds.array().length;
-  logger.info("Total guilds:", totalGuilds);
+  const totalGuilds = client.guilds.size;
+  logger.info(`Total guilds: ${totalGuilds}`);
 });
 
 client.on("message", async message => {
