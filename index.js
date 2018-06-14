@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const logger = winston.createLogger({
   level: "info",
-  format: winston.format.json(),
+  // format: winston.format.json(),
   transports: [
     //
     // - Write to all logs with level `info` and below to `combined.log`
@@ -16,21 +16,14 @@ const logger = winston.createLogger({
     //
     // new winston.transports.File({ filename: "error.log", level: "error" }),
     // new winston.transports.File({ filename: "combined.log" })
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.simple(),
+        winston.format.colorize()
+      )
+    })
   ]
 });
-
-//
-// If we're not in production then log to the `console` with the format:
-// `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
-// 
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: winston.format.combine(
-      winston.format.simple(),
-      winston.format.colorize()
-    )
-  }));
-}
 
 // Initialize Discord Bot
 const client = new Discord.Client();
@@ -45,23 +38,33 @@ client.on("ready", evt => {
 
 
 // TODO: post message when first joining
-// client.on('guildCreate', guild => {
-//   // waituntil guild is available
-//   waitUntil()
-//     .interval(1000)
-//     .times(30)
-//     .condition(() => guild.available)
-//     .done(result => {
-//       if (result) {
-//         // console.log(guild.channels.find("name", "general"));
-//         const channel = guild.channels.find("name", "general");
-//         guild.systemChannel.send
-//         // guild.defaultChannel.sendMessage("DM me your steam profile URL and I will give you your steam ID");
-//       }
-//     });
+client.on('guildCreate', guild => {
+  // waituntil guild is available
+  waitUntil()
+    .interval(1000)
+    .times(30)
+    .condition(() => guild.available)
+    .done(result => {
+      if (result) {
+        // console.log(guild.channels.find("name", "general"));
+        // const channel = guild.channels.find("name", "general");
+        // guild.systemChannel.send
+        // guild.defaultChannel.sendMessage("DM me your steam profile URL and I will give you your steam ID");
+        
+        const { id, name, region } = guild;
+        logger.info(`Added to guild ${name} | ID: ${id} | Region: ${region}`);
+        logger.info("Total guilds:", client.guilds.size);
+      }
+    });
 
-//   // message.channel.send("DM me your steam profile URL and I will give you your steam ID");
-// });
+  // message.channel.send("DM me your steam profile URL and I will give you your steam ID");
+});
+
+client.on("guildDelete", guild => {
+  const { id, name, region } = guild;
+  logger.info(`Guild ${name} removed me with ID: ${id}`);
+  logger.info("Total guilds:", client.guilds.size);
+});
 
 client.on("message", async message => {
 
